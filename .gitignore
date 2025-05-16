@@ -40,4 +40,7 @@ terraform.rc
 # .ssh key pairs file
 *.pem
 
+# PDF files
+*.pdf
+
 # End of https://www.toptal.com/developers/gitignore/api/terraform
