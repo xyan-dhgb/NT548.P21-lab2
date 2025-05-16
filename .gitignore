@@ -43,4 +43,7 @@ terraform.rc
 # PDF files
 *.pdf
 
+# backup files
+*.backup
+
 # End of https://www.toptal.com/developers/gitignore/api/terraform
