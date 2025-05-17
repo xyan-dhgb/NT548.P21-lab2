@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
 }
 
 # Create Public Subnet
-
+# checkov:skip=CKV_AWS_130: Need default public IP for lab/demo
 resource "aws_subnet" "public" {
     vpc_id             = aws_vpc.main.id
     cidr_block         = var.public_subnet_cidr
@@ -91,4 +91,63 @@ resource "aws_route_table_association" "public" {
 resource "aws_route_table_association" "private" {
     subnet_id      = aws_subnet.private.id
     route_table_id = aws_route_table.private.id
+}
+
+resource "aws_default_security_group" "default" {
+    vpc_id = aws_vpc.main.id
+
+    ingress {}
+    egress {}
+
+    tags = {
+        Name = "Default SG - deny all"
+    }
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+    name = "/aws/vpc/flow-logs/${aws_vpc.main.id}"
+    retention_in_days = 7
+}
+
+resource "aws_flow_log" "vpc_flow_log" {
+    log_destination_type = "cloud-watch-logs"
+    log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+    iam_role_arn         = aws_iam_role.vpc_flow_log_role.arn
+    vpc_id               = aws_vpc.main.id
+    traffic_type         = "ALL"
+}
+
+resource "aws_iam_role" "vpc_flow_log_role" {
+    name = "vpcFlowLogRole"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [{
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+            Service = "vpc-flow-logs.amazonaws.com"
+        }
+        }]
+    })
+}
+
+resource "aws_iam_role_policy" "vpc_flow_log_policy" {
+    name = "vpcFlowLogPolicy"
+    role = aws_iam_role.vpc_flow_log_role.id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [{
+        Effect = "Allow"
+        Action = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "logs:DescribeLogGroups",
+            "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+        }]
+    })
 }
