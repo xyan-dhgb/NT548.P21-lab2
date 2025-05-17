@@ -13,10 +13,10 @@ resource "aws_vpc" "main" {
 # Create Public Subnet
 # checkov:skip=CKV_AWS_130: Need default public IP for lab/demo
 resource "aws_subnet" "public" {
-    vpc_id             = aws_vpc.main.id
-    cidr_block         = var.public_subnet_cidr
+    vpc_id                  = aws_vpc.main.id
+    cidr_block              = var.public_subnet_cidr
     map_public_ip_on_launch = true
-    availability_zone  = var.az[0]
+    availability_zone       = var.az[0]
     tags = {
         Name = "PublicSubnet-${var.public_subnet_name}"
     }
@@ -105,8 +105,9 @@ resource "aws_default_security_group" "default" {
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-    name = "/aws/vpc/flow-logs/${aws_vpc.main.id}"
-    retention_in_days = 7
+  name              = "/aws/vpc/flow-logs/${aws_vpc.main.id}"
+  retention_in_days = 365
+  kms_key_id        = aws_kms_key.vpc_flow_logs.arn
 }
 
 resource "aws_flow_log" "vpc_flow_log" {
@@ -139,15 +140,28 @@ resource "aws_iam_role_policy" "vpc_flow_log_policy" {
     policy = jsonencode({
         Version = "2012-10-17"
         Statement = [{
-        Effect = "Allow"
-        Action = [
+            Effect = "Allow"
+            Action = [
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents",
             "logs:DescribeLogGroups",
             "logs:DescribeLogStreams"
-        ]
-        Resource = "*"
+            ]
+            Resource = [
+            "arn:aws:logs:${ap-southeast-2}:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs/${aws_vpc.main.id}:*"
+            ]
+            Condition = {
+            "StringEquals" = {
+                "aws:ResourceTag/Name" = "VPC Flow Logs"
+            }
+            }
         }]
-    })
+        })
 }
+
+resource "aws_kms_key" "vpc_flow_logs" {
+    description = "KMS key for VPC Flow Logs CloudWatch Log Group"
+}
+
+data "aws_caller_identity" "current" {}
