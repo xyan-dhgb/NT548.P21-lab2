@@ -44,7 +44,7 @@ terraform.rc
 *.pdf
 *.csv
 
-# backup files
-*.backup
+# Terraform hcl files
+*.lock.hcl
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
