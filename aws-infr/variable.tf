@@ -86,3 +86,8 @@ variable "allowed_ssh_cidr" {
     type        = string
     default     = "0.0.0.0/0"  
 }
+
+variable "security_groups_id" {
+    description = "Security group IDs for the EC2 instances"
+    type        = list(string)
+}
