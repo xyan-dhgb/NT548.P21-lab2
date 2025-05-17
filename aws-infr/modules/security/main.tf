@@ -1,6 +1,6 @@
 #Create security groups for public EC2 instances
-// checkov:skip=CKV_AWS_24: Need to open SSH for lab/demo
-// checkov:skip=CKV2_AWS_5: This SG is already attached to EC2 via module
+# checkov:skip=CKV_AWS_24: Need to open SSH for lab/demo
+# checkov:skip=CKV2_AWS_5: This SG is already attached to EC2 via module
 resource "aws_security_group" "public_ec2_sg" {
     name        = var.public_ec2_sg_name
     vpc_id      = var.vpc_id
@@ -32,7 +32,7 @@ resource "aws_security_group" "public_ec2_sg" {
 }
 
 # Create security groups for private EC2 instances
-// checkov:skip=CKV2_AWS_5: This SG is already attached to EC2 via module
+# checkov:skip=CKV2_AWS_5: This SG is already attached to EC2 via module
 resource "aws_security_group" "private_ec2_sg" {
     name        = var.private_ec2_sg_name
     vpc_id      = var.vpc_id
@@ -72,7 +72,7 @@ resource "aws_security_group" "private_ec2_sg" {
 }
 
 # Create a default security group for the VPC
-// checkov:skip=CKV2_AWS_5: Default SG does not need to be tied to a specific resource
+# checkov:skip=CKV2_AWS_5: Default SG does not need to be tied to a specific resource
 resource "aws_security_group" "default_sg" {
     name        = var.default_sg_name
     vpc_id      = var.vpc_id
