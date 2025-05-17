@@ -15,12 +15,12 @@ resource "aws_iam_role" "ec2_role" {
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
-    name = "ec2_basic_profile"
-    role = aws_iam_role.ec2_role.name
+  name = "ec2_basic_profile"
+  role = aws_iam_role.ec2_role.name
 }
 
 # Create Public EC2
-// checkov:skip=CKV_AWS_130: Need default public IP for lab/demo
+// checkov:skip=CKV_AWS_88: Need default public IP for lab/demo
 resource "aws_instance" "public_instance" {
     ami                                         = var.ami_id
     instance_type                       = var.instance_type
@@ -47,17 +47,19 @@ resource "aws_instance" "public_instance" {
 }
 
 # Create Private EC2\
-// checkov:skip=CKV2_AWS_41: EC2 private does not need IAM role for lab/demo purposes
+# checkov:skip=CKV2_AWS_41: EC2 private does not need IAM role for lab/demo purposes
 resource "aws_instance" "private_instance" {
-    ami                                             = var.ami_id
-    instance_type                           = var.instance_type
-    subnet_id                                  = var.private_subnet_id
-    vpc_security_group_ids          = [var.private_sg_id]
-    key_name                                  = var.key_name
-    ebs_optimized                          = true
-    monitoring                                = true 
+    ami                         = var.ami_id
+    instance_type               = var.instance_type
+    subnet_id                   = var.private_subnet_id
+    vpc_security_group_ids      = [var.private_sg_id]
+    key_name                    = var.key_name
+    ebs_optimized               = true
+    monitoring                  = true
+    iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+
     metadata_options {
-        http_tokens = "required"
+        http_tokens   = "required"
         http_endpoint = "enabled"
     }
 
