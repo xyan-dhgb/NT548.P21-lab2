@@ -5,3 +5,4 @@ private_subnet_cidr            = "10.0.2.0/24"
 allowed_ssh_cidr                = "0.0.0.0/0"
 ami_id                                  =  "ami-0f5d1713c9af4fe30"
 key_name                            =  "lab2-ssh-key-pair"
+security_groups_id            = [ "sg-0c8c44f065c08d1cb" ]
