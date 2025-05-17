@@ -94,14 +94,33 @@ resource "aws_route_table_association" "private" {
 }
 
 resource "aws_default_security_group" "default" {
-    vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
 
-    ingress {}
-    egress {}
+  ingress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    cidr_blocks       = []
+    ipv6_cidr_blocks  = []
+    security_groups   = []
+    prefix_list_ids   = []
+    description       = "Deny all inbound"
+  }
 
-    tags = {
-        Name = "Default SG - deny all"
-    }
+  egress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    cidr_blocks       = []
+    ipv6_cidr_blocks  = []
+    security_groups   = []
+    prefix_list_ids   = []
+    description       = "Deny all outbound"
+  }
+
+  tags = {
+    Name = "Default SG - deny all"
+  }
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
@@ -149,7 +168,7 @@ resource "aws_iam_role_policy" "vpc_flow_log_policy" {
             "logs:DescribeLogStreams"
             ]
             Resource = [
-            "arn:aws:logs:${ap-southeast-2}:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs/${aws_vpc.main.id}:*"
+            "arn:aws:logs:${var.aws_regions}:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/flow-logs/${aws_vpc.main.id}:*"
             ]
             Condition = {
             "StringEquals" = {
