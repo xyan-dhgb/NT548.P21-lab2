@@ -60,9 +60,9 @@ jobs:
         working-directory: ${{env.TF_WORKING_DIR}}
       
       - name: Terraform Plan
-        run: terraform plan -var="ami_id=ami-0f5d1713c9af4fe30"
+        run: terraform plan -var="ami_id=ami-0f5d1713c9af4fe30" -var="key_name=lab2-ssh-key-pair"
         working-directory: ${{env.TF_WORKING_DIR}}
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="ami_id=ami-0f5d1713c9af4fe30"
+        run: terraform apply -auto-approve -var="ami_id=ami-0f5d1713c9af4fe30" -var="key_name=lab2-ssh-key-pair"
         working-directory: ${{env.TF_WORKING_DIR}}
