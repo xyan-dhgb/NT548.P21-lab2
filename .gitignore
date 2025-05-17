@@ -40,8 +40,9 @@ terraform.rc
 # .ssh key pairs file
 *.pem
 
-# PDF files
+# Office files
 *.pdf
+*.csv
 
 # backup files
 *.backup
