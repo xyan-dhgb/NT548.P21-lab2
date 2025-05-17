@@ -162,6 +162,22 @@ resource "aws_iam_role_policy" "vpc_flow_log_policy" {
 
 resource "aws_kms_key" "vpc_flow_logs" {
     description = "KMS key for VPC Flow Logs CloudWatch Log Group"
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Id      = "key-default-1"
+        Statement = [
+        {
+            Sid       = "Allow administration of the key"
+            Effect    = "Allow"
+            Principal = {
+            AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+            }
+            Action    = "kms:*"
+            Resource  = "*"
+        }
+        ]
+    })
 }
 
 data "aws_caller_identity" "current" {}

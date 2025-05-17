@@ -19,32 +19,34 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   role = aws_iam_role.ec2_role.name
 }
 
+# Create Public Subnet
 # Create Public EC2
-// checkov:skip=CKV_AWS_88: Need default public IP for lab/demo
+# checkov:skip=CKV_AWS_88: Need default public IP for lab/demo
 resource "aws_instance" "public_instance" {
-    ami                                         = var.ami_id
-    instance_type                       = var.instance_type
-    subnet_id                              = var.public_subnet_id
-    associate_public_ip_address = true
-    vpc_security_group_ids      = [var.public_sg_id]
-    key_name                             = var.key_name
-    ebs_optimized                     = true
-    monitoring                            = true
-    iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.public_subnet_id
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [var.public_sg_id]
+  key_name                    = var.key_name
+  ebs_optimized               = true
+  monitoring                  = true
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
-    metadata_options {
-        http_tokens = "required"
-        http_endpoint = "enabled"
-    }
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
 
-    root_block_device {
-        encrypted = true
-    }
+  root_block_device {
+    encrypted = true
+  }
 
-    tags = {
-        Name = "PublicInstance-${var.public_instance_name}"
-    }
+  tags = {
+    Name = "PublicInstance-${var.public_instance_name}"
+  }
 }
+
 
 # Create Private EC2\
 # checkov:skip=CKV2_AWS_41: EC2 private does not need IAM role for lab/demo purposes

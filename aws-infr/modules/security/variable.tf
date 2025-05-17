@@ -11,7 +11,7 @@ variable "vpc_cidr_block" {
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed for SSH access to public instances"
   type        = string
-  default     = "0.0.0.0/0" 
+  default     = "10.0.0.0/16" 
 }
 
 variable "public_ec2_sg_name" {

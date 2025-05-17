@@ -1,0 +1,3 @@
+skip_checks:
+  - CKV_AWS_130  # Subnet public IP auto-assign
+  - CKV_AWS_88   # EC2 shouldn't have public IP (skip vì lab/demo)
