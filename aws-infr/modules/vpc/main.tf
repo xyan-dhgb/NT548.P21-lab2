@@ -124,9 +124,9 @@ resource "aws_default_security_group" "default" {
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  name              = "/aws/vpc/flow-logs/${aws_vpc.main.id}"
-  retention_in_days = 365
-  kms_key_id        = aws_kms_key.vpc_flow_logs.arn
+    name              = "/aws/vpc/flow-logs/${aws_vpc.main.id}"
+    retention_in_days = 365
+    kms_key_id        = aws_kms_key.vpc_flow_logs.arn
 }
 
 resource "aws_flow_log" "vpc_flow_log" {
@@ -187,12 +187,27 @@ resource "aws_kms_key" "vpc_flow_logs" {
         Id      = "key-default-1"
         Statement = [
         {
-            Sid       = "Allow administration of the key"
-            Effect    = "Allow"
+            Sid      = "Allow administration of the key"
+            Effect   = "Allow"
             Principal = {
             AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
             }
-            Action    = "kms:*"
+            Action   = "kms:*"
+            Resource = "*"
+        },
+        {
+            Sid      = "Allow CloudWatch Logs to use the key"
+            Effect   = "Allow"
+            Principal = {
+            Service = "logs.${var.aws_regions}.amazonaws.com"
+            }
+            Action   = [
+            "kms:Encrypt",
+            "kms:Decrypt",
+            "kms:ReEncrypt*",
+            "kms:GenerateDataKey*",
+            "kms:DescribeKey"
+            ]
             Resource  = "*"
         }
         ]
