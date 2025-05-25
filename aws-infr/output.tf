@@ -28,10 +28,6 @@ output "private_ec2_sg_name" {
     value       = module.security.private_ec2_sg_name
 }
 
-output "default_sg_name" {
-    description = "The name of the default security group"
-    value       = module.security.default_sg_name
-}
 
 output "ssh_command" {
     description = "SSH command to connect to the public instance"
