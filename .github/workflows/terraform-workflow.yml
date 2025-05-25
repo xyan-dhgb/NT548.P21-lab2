@@ -61,7 +61,7 @@ jobs:
 
       
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var-file="../../aws-infr/terraform.tfvars"
         working-directory: ${{env.TF_WORKING_DIR}}
 
       - name: Terraform Apply
