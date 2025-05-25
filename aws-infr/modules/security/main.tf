@@ -71,26 +71,3 @@ resource "aws_security_group" "private_ec2_sg" {
     }
 }
 
-# Create a default security group for the VPC
-# checkov:skip=CKV2_AWS_5: Default SG does not need to be tied to a specific resource
-resource "aws_security_group" "default_sg" {
-    name        = var.default_sg_name
-    vpc_id      = var.vpc_id
-    description = "Default security group"
-
-    ingress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        cidr_blocks = [var.vpc_cidr_block]
-        description = "Allow all inbound traffic from VPC"
-    }
-
-    egress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow HTTPS outbound"
-    }
-}
