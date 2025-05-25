@@ -60,7 +60,7 @@ jobs:
         working-directory: ${{env.TF_WORKING_DIR}}
       
       - name: Terraform Plan
-        run: terraform plan -var="ami_id=ami-0f5d1713c9af4fe30"
+        run:  terraform plan -var-file="terraform.tfvars"
         working-directory: ${{env.TF_WORKING_DIR}}
 
       - name: Terraform Apply
