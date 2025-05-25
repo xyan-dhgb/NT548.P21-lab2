@@ -58,12 +58,24 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
         working-directory: ${{env.TF_WORKING_DIR}}
+
+      - name: Create terraform.tfvars file from secrets
+        run: |
+          cat <<EOF > terraform.tfvars
+          ami_id       = "${{ secrets.TF_AMI_ID }}"
+          key_name     = "${{ secrets.TF_KEY_NAME }}"
+          public_sg_id = "${{ secrets.TF_PUBLIC_SG_ID }}"
+          private_sg_id = "${{ secrets.TF_PRIVATE_SG_ID }}"
+          security_groups_id = ${{ secrets.TF_SG_IDS }}
+          EOF
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
       
       - name: Terraform Plan
-        run:  terraform plan -var-file="terraform.tfvars"
+        run: terraform plan -var-file="terraform.tfvars"
         working-directory: ${{env.TF_WORKING_DIR}}
 
       - name: Terraform Apply
         if: github.event_name == 'push'
-        run: terraform apply -auto-approve 
+        run: terraform apply -auto-approve -var-file="terraform.tfvars"
         working-directory: ${{env.TF_WORKING_DIR}}
