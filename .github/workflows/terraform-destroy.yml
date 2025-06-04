@@ -3,6 +3,9 @@ name: "Terraform Destroy"
 on:
   workflow_dispatch:
 
+env:
+  TF_WORKING_DIR: ./aws-infr
+
 jobs:
   terraform-destroy:
     name: "Terraform Destroy"
