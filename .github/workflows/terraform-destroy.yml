@@ -29,6 +29,8 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
+        working-directory: ${{ env.TF_WORKING_DIR }}
