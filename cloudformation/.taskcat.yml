@@ -7,7 +7,7 @@ project:
 
 tests:
   default:
-    template: ./template.yml
+    template: template.yml
     parameters:
       KeyPairName: my-key
       VpcCidr: 10.0.0.0/16
