@@ -1,0 +1,18 @@
+project:
+  name: lab2-group11-task2
+  owner: giabaoctg@gmail.com
+  s3_bucket: ''  # Taskcat sẽ tự tạo bucket nếu để trống
+  regions:
+    - ap-southeast-2
+
+tests:
+  default:
+    template: ./template.yml
+    parameters:
+      KeyPairName: my-key
+      VpcCidr: 10.0.0.0/16
+      PublicSubnetCidr: 10.0.1.0/24
+      PrivateSubnetCidr: 10.0.2.0/24
+      InstanceType: t2.small
+      # Thêm các parameter khác nếu template của bạn yêu cầu
+
