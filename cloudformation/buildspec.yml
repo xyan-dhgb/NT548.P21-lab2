@@ -3,8 +3,6 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: ap-southeast-2
-    CFN_TEMPLATE: cloudformation/template.yml
-    TASKCAT_CONFIG: cloudformation/.taskcat.yml
 
 phases:
   install:
@@ -32,41 +30,12 @@ phases:
       - ls -la cloudformation/ || echo "Warning - cloudformation directory not found"
       - echo "Checking if CloudFormation template exists"
       - |
-        if [ ! -f "$CFN_TEMPLATE" ]; then
-          echo "ERROR - CloudFormation template not found at $CFN_TEMPLATE"
-          exit 1
-        fi
-      - echo "Checking if taskcat config exists"
-      - |
-        if [ ! -f "$TASKCAT_CONFIG" ]; then
-          echo "WARNING - Taskcat config not found at $TASKCAT_CONFIG"
-          echo "Creating default taskcat configuration..."
-          mkdir -p cloudformation
-          cat > $TASKCAT_CONFIG << 'EOF'
-        project:
-          name: lab2-group11-task2
-          owner: giabaoctg@gmail.com
-          s3_bucket: ""
-          regions:
-            - ap-southeast-2
-
-        tests:
-          default:
-            template: ./template.yml
-            parameters:
-              KeyPairName: my-key
-              VpcCidr: 10.0.0.0/16
-              PublicSubnetCidr: 10.0.1.0/24
-              PrivateSubnetCidr: 10.0.2.0/24
-              InstanceType: t2.small
-        EOF
-        fi
 
   build:
     commands:
       - echo "Build phase started on $(date)"
       - echo "=== Running cfn-lint validation ==="
-      - cfn-lint "$CFN_TEMPLATE"
+      - cfn-lint cloudformation/template.yml
       - |
         if [ $? -eq 0 ]; then
           echo "cfn-lint validation passed"
@@ -75,7 +44,7 @@ phases:
           exit 1
         fi
       - echo "=== Running AWS CloudFormation template validation ==="
-      - aws cloudformation validate-template --template-body file://"$CFN_TEMPLATE"
+      - aws cloudformation validate-template --template-body file://cloudformation/template.yml
       - |
         if [ $? -eq 0 ]; then
           echo "AWS CloudFormation template validation passed"
@@ -117,15 +86,15 @@ phases:
 reports:
   taskcat-report:
     files:
-      - 'cloudformation/taskcat_outputs/**/*'
+      - cloudformation/taskcat_outputs/**/*
     base-directory: '.'
 
 artifacts:
   files:
-    - 'cloudformation/template.yml'
-    - 'cloudformation/.taskcat.yml'
-    - 'cloudformation/taskcat_outputs/**/*'
-    - 'taskcat-output.log'
+    - cloudformation/template.yml
+    - cloudformation/.taskcat.yml
+    - cloudformation/taskcat_outputs/**/*
+    - taskcat-output.log
   name: cloudformation-validated-artifacts
 
 cache:
