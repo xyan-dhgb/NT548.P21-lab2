@@ -18,7 +18,6 @@ phases:
       - echo "Installing taskcat"
       - pip install taskcat
 
-  # Validate the CloudFormation template and Taskcat configuration
   pre_build:
     commands:
       - echo "Pre-build phase started on $(date)"
@@ -28,28 +27,26 @@ phases:
       - aws --version
       - cfn-lint --version
       - taskcat --version
-      
       - echo "Validating file structure..."
       - ls -la
-      - ls -la cloudformation/ || echo "Warning: cloudformation directory not found"
-      
+      - ls -la cloudformation/ || echo "Warning - cloudformation directory not found"
       - echo "Checking if CloudFormation template exists"
       - |
-        if [ ! -f "$CFN_TEMPLATE_PATH" ]; then
-          echo "ERROR: CloudFormation template not found at $CFN_TEMPLATE_PATH"
+        if [ ! -f "$CFN_TEMPLATE" ]; then
+          echo "ERROR - CloudFormation template not found at $CFN_TEMPLATE"
           exit 1
         fi
-      
       - echo "Checking if taskcat config exists"
       - |
-        if [ ! -f "$TASKCAT_CONFIG_PATH" ]; then
-          echo "WARNING: Taskcat config not found at $TASKCAT_CONFIG_PATH"
+        if [ ! -f "$TASKCAT_CONFIG" ]; then
+          echo "WARNING - Taskcat config not found at $TASKCAT_CONFIG"
           echo "Creating default taskcat configuration..."
-          cat > .taskcat.yml << EOF
+          mkdir -p cloudformation
+          cat > $TASKCAT_CONFIG << 'EOF'
         project:
           name: lab2-group11-task2
           owner: giabaoctg@gmail.com
-          s3_bucket: ''  # Taskcat sẽ tự tạo bucket nếu để trống
+          s3_bucket: ""
           regions:
             - ap-southeast-2
 
@@ -66,78 +63,71 @@ phases:
         fi
 
   build:
-      commands:
-        - echo "Build phase started on $(date)"
-        
-        # CloudFormation Linting
-        - echo "=== Running cfn-lint validation ==="
-        - cfn-lint "$CFN_TEMPLATE_PATH"
-        - |
-          if [ $? -eq 0 ]; then
-            echo "cfn-lint validation passed"
-          else
-            echo "cfn-lint validation failed"
-            exit 1
-          fi
-        
-        # AWS CloudFormation Template Validation
-        - echo "=== Running AWS CloudFormation template validation ==="
-        - aws cloudformation validate-template --template-body file://"$CFN_TEMPLATE_PATH"
-        - |
-          if [ $? -eq 0 ]; then
-            echo "AWS CloudFormation template validation passed"
-          else
-            echo "AWS CloudFormation template validation failed"
-            exit 1
-          fi
-        
-        # Taskcat Testing (with error handling)
-        - echo "=== Running taskcat tests ==="
-        - |
-          if taskcat test run --no-delete 2>&1 | tee taskcat-output.log; then
-            echo " Taskcat tests completed successfully"
-            # Clean up test resources
-            taskcat test clean ALL || echo "Warning: Some taskcat cleanup may have failed"
-          else
-            echo " Taskcat tests failed"
-            echo "Taskcat output:"
-            cat taskcat-output.log
-            # Still try to clean up even if tests failed
-            taskcat test clean ALL || echo "Warning: Taskcat cleanup failed"
-            exit 1
-          fi
+    commands:
+      - echo "Build phase started on $(date)"
+      - echo "=== Running cfn-lint validation ==="
+      - cfn-lint "$CFN_TEMPLATE"
+      - |
+        if [ $? -eq 0 ]; then
+          echo "cfn-lint validation passed"
+        else
+          echo "cfn-lint validation failed"
+          exit 1
+        fi
+      - echo "=== Running AWS CloudFormation template validation ==="
+      - aws cloudformation validate-template --template-body file://"$CFN_TEMPLATE"
+      - |
+        if [ $? -eq 0 ]; then
+          echo "AWS CloudFormation template validation passed"
+        else
+          echo "AWS CloudFormation template validation failed"
+          exit 1
+        fi
+      - echo "=== Running taskcat tests ==="
+      - cd cloudformation
+      - |
+        if taskcat test run --no-delete 2>&1 | tee ../taskcat-output.log; then
+          echo "Taskcat tests completed successfully"
+          taskcat test clean ALL || echo "Warning - Some taskcat cleanup may have failed"
+        else
+          echo "Taskcat tests failed"
+          echo "Taskcat output:"
+          cat ../taskcat-output.log
+          taskcat test clean ALL || echo "Warning - Taskcat cleanup failed"
+          exit 1
+        fi
+      - cd ..
 
-  # Summary the results of the build
   post_build:
-      commands:
-        - echo "Post-build phase started on $(date)"
-        - |
-          if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then
-            echo "Build completed successfully"
-            echo "All validation checks passed:"
-            echo "  - cfn-lint validation: OK"
-            echo "  - AWS template validation: OK" 
-            echo "  - Taskcat testing: OK"
-          else
-            echo "Build failed"
-            echo "Please check the build logs above for details"
-          fi
-        
-        - echo "Build phase completed on $(date)"
+    commands:
+      - echo "Post-build phase started on $(date)"
+      - |
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" = "1" ]; then
+          echo "Build completed successfully"
+          echo "All validation checks passed:"
+          echo "  - cfn-lint validation: OK"
+          echo "  - AWS template validation: OK"
+          echo "  - Taskcat testing: OK"
+        else
+          echo "Build failed"
+          echo "Please check the build logs above for details"
+        fi
+      - echo "Build phase completed on $(date)"
 
-  reports:
-    taskcat-report:
-      files:
-        - '/cloudformation/taskcat_outputs/**/*'
-      base-directory: '.'
+reports:
+  taskcat-report:
+    files:
+      - 'cloudformation/taskcat_outputs/**/*'
+    base-directory: '.'
 
 artifacts:
   files:
-    - cloudformation/template.yml
-    - cloudformation/.taskcat.yml
-    - cloudformation/taskcat_outputs/**/*
+    - 'cloudformation/template.yml'
+    - 'cloudformation/.taskcat.yml'
+    - 'cloudformation/taskcat_outputs/**/*'
+    - 'taskcat-output.log'
   name: cloudformation-validated-artifacts
-  
+
 cache:
   paths:
     - '/root/.cache/pip/**/*'
