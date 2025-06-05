@@ -32,7 +32,6 @@ terraform.rc
 # Taskcat output folder
 .taskcat_outputs/
 taskcat_outputs/
-*.taskcat.*
 
 # ========== AWS CLI / SDK / Config ==========
 .aws/
