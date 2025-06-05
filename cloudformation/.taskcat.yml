@@ -14,5 +14,3 @@ tests:
       PublicSubnetCidr: 10.0.1.0/24
       PrivateSubnetCidr: 10.0.2.0/24
       InstanceType: t2.small
-      # Thêm các parameter khác nếu template của bạn yêu cầu
-
