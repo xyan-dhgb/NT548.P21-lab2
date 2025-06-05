@@ -23,7 +23,7 @@ jobs:
         run: |
             git config --global user.email "giabaoctg@gmail.com"
             git config --global user.name "xyan-dhgb"
-            git remote add codecommit https://$CODECOMMIT_USERNAME:$CODECOMMIT_PASSWORD@git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/your-repo
+            git remote add codecommit https://$CODECOMMIT_USERNAME:$CODECOMMIT_PASSWORD@git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/my-repo
             git push --force codecommit main
     env:
         CODECOMMIT_USERNAME: ${{ secrets.CODECOMMIT_USERNAME }}
