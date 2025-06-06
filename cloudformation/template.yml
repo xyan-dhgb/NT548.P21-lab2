@@ -13,6 +13,7 @@ Parameters:
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: EC2 Key Pair for SSH access
+    Default: my-key
 
 Resources:
   # Create a VPC
