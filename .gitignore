@@ -61,6 +61,7 @@ __pycache__/
 # ========== Office / misc ==========
 *.pdf
 *.csv
+*.docs
 
 # ========== Node/npm ==========
 node_modules/
