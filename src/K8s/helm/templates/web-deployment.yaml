@@ -29,7 +29,7 @@ spec:
           value: {{ .Values.eum.url }}
         {{- end}}
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         resources:
           limits:
             cpu: 200m

@@ -1,7 +1,7 @@
 FROM python:3.9
 
 # Some default values
-ENV HOST="http://localhost:8080/" \
+ENV HOST="http://localhost:8081/" \
     SILENT=0 \
     NUM_CLIENTS=1 \
     ERROR=0 \

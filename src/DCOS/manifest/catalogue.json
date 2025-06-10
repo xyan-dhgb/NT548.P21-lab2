@@ -7,7 +7,7 @@
         {
           "containerPort": 0,
           "labels": {
-            "VIP_0": "/robotshop/catalogue:8080"
+            "VIP_0": "/robotshop/catalogue:8081"
           },
           "servicePort": 10006
         }

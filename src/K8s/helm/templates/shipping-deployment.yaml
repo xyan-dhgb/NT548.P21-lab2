@@ -22,7 +22,7 @@ spec:
         image: {{ .Values.image.repo }}/rs-shipping:{{ .Values.image.version }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         # it's Java it needs lots of memory
         resources:
           limits:
@@ -34,7 +34,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8081
           initialDelaySeconds: 5
           periodSeconds: 5
           failureThreshold: 30

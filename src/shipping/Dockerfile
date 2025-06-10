@@ -17,11 +17,11 @@ RUN mvn package
 #
 FROM openjdk:8-jdk
 
-EXPOSE 8080
+EXPOSE 8081
 
 WORKDIR /opt/shipping
 
-ENV CART_ENDPOINT=cart:8080
+ENV CART_ENDPOINT=cart:8081
 ENV DB_HOST=mysql
 
 COPY --from=build /opt/shipping/target/shipping-1.0.jar shipping.jar

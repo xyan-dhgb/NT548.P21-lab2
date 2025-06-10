@@ -21,6 +21,6 @@ docker service ls
 
 echo " "
 IP=$(docker-machine ip master)
-echo "Go to the shop http://${IP}:8080/ when all the services have started"
+echo "Go to the shop http://${IP}:8081/ when all the services have started"
 echo "This may take a while..."
 

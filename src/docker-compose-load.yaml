@@ -5,7 +5,7 @@ services:
     build:
       context: load-gen
     environment:
-      HOST: http://web:8080
+      HOST: http://web:8081
     networks:
       - robot-shop
     depends_on:
